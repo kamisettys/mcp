@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "hello_mcp": {
+      "command": "uv",
+      "args": [
+        "run",
+        "C:\\Users\\sowmy\\AppData\\Local\\Programs\\Python\\Python313\\sampleproject1\\hello_mcp\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\sowmy\\AppData\\Local\\Programs\\Python\\Python313\\sampleproject1\\hello_mcp\\hello.py"
+      ],
+      "cwd": "C:\\Users\\sowmy\\AppData\\Local\\Programs\\Python\\Python313\\sampleproject1\\hello_mcp"
+     
+    }
+  }
+}
