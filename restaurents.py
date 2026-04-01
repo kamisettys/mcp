@@ -1,4 +1,4 @@
-RESTARAUNTS = [
+RESTAURANTS = [
   {
     "restaurantId": "REST_99294",
     "name": "Domino's Pizza",
