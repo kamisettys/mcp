@@ -5,35 +5,6 @@ from pydantic import BaseModel, Field
 from typing import Annotated, Literal
 
 
-class Item(BaseModel):
-    """Represents an item included in a customer's order.
-
-    Attributes:
-        Item_id (int): Unique identifier for the item. Must be greater than 0.
-        name (str): Name of the item.
-        quantity (int): Quantity of the item ordered. Must be greater than 1.
-    """
-
-    Item_id: Annotated[int, Field(gt=0)]
-    name: Annotated[str, Field(description="Item name")]
-    quantity: Annotated[int, Field(gt=1)]
-
-
-class Pricing(BaseModel):
-    """Represents the pricing breakdown for an order.
-
-    Attributes:
-        itemTotal (float): Total cost of all items. Must be greater than 0.
-        deliveryFee (float): Delivery charges applied to the order.
-        gst (float): GST fee applied to the order.
-        totalAmount (float): Final payable amount including all charges.
-    """
-
-    itemTotal: Annotated[float, Field(gt=0, description="Total price of the item")]
-    deliveryFee: Annotated[float, Field(gt=0, description="delivery charges")]
-    gst: Annotated[float, Field(gt=0, description="GST fee")]
-    totalAmount: Annotated[float, Field(gt=0, description="Total amount of the order")]
-
 
 class Restaurant(BaseModel):
     """Represents the restaurant fulfilling the order.
@@ -42,62 +13,98 @@ class Restaurant(BaseModel):
         name (str): Name of the restaurant.
         restaurantId (str): Unique identifier for the restaurant.
         location (str): Physical location of the restaurant.
-        rating (float): Rating of the restaurant. Must be greater than 0.
+        rating (float): Rating of the restaurant.
         deliveryTime (str): Estimated delivery time for the order.
     """
 
     name: Annotated[str, Field(description="Restaurant name")]
     restaurantId: Annotated[str, Field(description="Restaurant ID")]
     location: Annotated[str, Field(description="Restaurant location")]
-    rating: Annotated[float, Field(gt=0, description="Restaurant rating")]
+    rating: Annotated[float, Field(description="Restaurant rating")]
     deliveryTime: Annotated[str, Field(description="Estimated delivery time")]
+
+
+class OrderItem(BaseModel):
+    """Represents an item included in the order.
+
+    Attributes:
+        name (str): Name of the item.
+        quantity (int): Quantity ordered.
+        price (float): Price of the item.
+        customizations (list[str]): List of customizations applied to the item.
+    """
+
+    name: Annotated[str, Field(description="Item name")]
+    quantity: Annotated[int, Field(description="Quantity ordered")]
+    price: Annotated[float, Field(description="Price of the item")]
+    customizations: Annotated[list[str], Field(description="Customizations applied")]
+
+
+class Pricing(BaseModel):
+    """Represents the pricing breakdown for the order.
+
+    Attributes:
+        itemTotal (float): Total cost of all items.
+        deliveryFee (float): Delivery charges applied.
+        platformFee (float): Platform service fee.
+        gst (float): GST applied to the order.
+        discount (float): Discount applied to the order.
+        totalAmount (float): Final payable amount.
+    """
+
+    itemTotal: Annotated[float, Field(description="Total cost of items")]
+    deliveryFee: Annotated[float, Field(description="Delivery charges")]
+    platformFee: Annotated[float, Field(description="Platform service fee")]
+    gst: Annotated[float, Field(description="GST applied")]
+    discount: Annotated[float, Field(description="Discount applied")]
+    totalAmount: Annotated[float, Field(description="Final payable amount")]
 
 
 class Payment(BaseModel):
     """Represents payment information for the order.
 
     Attributes:
-        method (str): Payment method used (e.g., UPI, card, cash).
+        method (str): Payment method used.
         transactionId (str): Unique identifier for the payment transaction.
-        status (Literal): Payment status, either 'paid' or 'notpaid'.
+        status (Literal): Payment status (paid or notpaid).
     """
 
-    method: Annotated[str, Field(description="Payment method used for the order")]
-    transactionId: Annotated[str, Field(description="Unique identifier for the payment transaction")]
+    method: Annotated[str, Field(description="Payment method used")]
+    transactionId: Annotated[str, Field(description="Transaction ID")]
     status: Annotated[Literal["paid", "notpaid"], Field(description="Payment status")]
 
 
-class Delivery_Address(BaseModel):
+class DeliveryAddress(BaseModel):
     """Represents the delivery address for the order.
 
     Attributes:
-        label (Literal): Label for the address (Home or office).
+        label (str): Label for the address (e.g., Home, Office).
         address (str): Full delivery address.
         city (str): City where the order is delivered.
-        pincode (int): ZIP code for the delivery location.
+        pincode (str): Postal code of the delivery location.
     """
 
-    label: Annotated[Literal["Home", "office"], Field(description="label for delivery")]
-    address: Annotated[str, Field(description="address for delivery")]
-    city: Annotated[str, Field(description="City for delivery")]
-    pincode: Annotated[int, Field(description="ZIP code for delivery")]
+    label: Annotated[str, Field(description="Address label")]
+    address: Annotated[str, Field(description="Full delivery address")]
+    city: Annotated[str, Field(description="City of delivery")]
+    pincode: Annotated[str, Field(description="Postal code")]
 
 
-class Delivery_Partner(BaseModel):
+class DeliveryPartner(BaseModel):
     """Represents the delivery partner assigned to the order.
 
     Attributes:
         name (str): Name of the delivery partner.
-        rating (float): Rating of the delivery partner. Must be greater than 0.
+        rating (float): Rating of the delivery partner.
         phone (str): Contact number of the delivery partner.
     """
 
-    name: Annotated[str, Field(description="Name of the delivery partner")]
-    rating: Annotated[float, Field(gt=0, description="Rating of the delivery partner")]
-    phone: Annotated[str, Field(description="Contact number of the delivery partner")]
+    name: Annotated[str, Field(description="Delivery partner name")]
+    rating: Annotated[float, Field(description="Delivery partner rating")]
+    phone: Annotated[str, Field(description="Delivery partner phone number")]
 
 
-class TimeLine(BaseModel):
+class Timeline(BaseModel):
     """Represents the timeline of the order from placement to delivery.
 
     Attributes:
@@ -108,56 +115,59 @@ class TimeLine(BaseModel):
         delivered (str): Timestamp when the order was delivered.
     """
 
-    orderPlaced: Annotated[str, Field(description="Timestamp when the order was placed")]
-    restaurantAccepted: Annotated[str, Field(description="Timestamp when the restaurant accepted the order")]
-    foodReady: Annotated[str, Field(description="Timestamp when the food is ready")]
-    outForDelivery: Annotated[str, Field(description="Timestamp when the order is out for delivery")]
-    delivered: Annotated[str, Field(description="Timestamp when the order is delivered")]
+    orderPlaced: Annotated[str, Field(description="Order placed timestamp")]
+    restaurantAccepted: Annotated[str, Field(description="Restaurant acceptance timestamp")]
+    foodReady: Annotated[str, Field(description="Food ready timestamp")]
+    outForDelivery: Annotated[str, Field(description="Out for delivery timestamp")]
+    delivered: Annotated[str, Field(description="Delivered timestamp")]
 
 
 class Ratings(BaseModel):
     """Represents customer ratings and review for the order.
 
     Attributes:
-        food (float): Rating for the food quality. Must be greater than 0.
-        delivery (float): Rating for the delivery experience. Must be greater than 0.
+        food (float): Rating for the food quality.
+        delivery (float): Rating for the delivery experience.
         review (str): Written review provided by the customer.
     """
 
-    food: Annotated[float, Field(gt=0, description="Rating for the food")]
-    delivery: Annotated[float, Field(gt=0, description="Rating for the delivery")]
-    review: Annotated[str, Field(description="Customer review for the order")]
+    food: Annotated[float, Field(description="Food rating")]
+    delivery: Annotated[float, Field(description="Delivery rating")]
+    review: Annotated[str, Field(description="Customer review text")]
 
 
 class Order(BaseModel):
     """Represents a complete customer order with all associated details.
 
     Attributes:
-        order_id (str): Unique identifier for the order.
-        restaurant (list[Restaurant]): Restaurant fulfilling the order.
-        status (Literal): Current status of the order.
-        items (list[Item]): List of items included in the order.
-        pricing (list[Pricing]): Pricing breakdown for the order.
-        payment (list[Payment]): Payment details for the order.
-        deliveryAddress (list[Delivery_Address]): Delivery address information.
-        deliveryPartner (list[Delivery_Partner]): Assigned delivery partner details.
-        timeline (list[TimeLine]): Timeline events for the order.
-        ratings (list[Ratings]): Customer ratings and review.
+        orderId (str): Unique identifier for the order.
+        customerId (str): Unique identifier for the customer.
+        customerName (str): Name of the customer.
+        orderDate (str): Timestamp when the order was placed.
+        status (str): Current status of the order.
+        restaurant (Restaurant): Restaurant fulfilling the order.
+        items (list[OrderItem]): List of items included in the order.
+        pricing (Pricing): Pricing breakdown for the order.
+        payment (Payment): Payment details for the order.
+        deliveryAddress (DeliveryAddress): Delivery address information.
+        deliveryPartner (DeliveryPartner): Assigned delivery partner details.
+        timeline (Timeline): Timeline events for the order.
+        ratings (Ratings): Customer ratings and review.
     """
 
-    order_id: Annotated[str, Field(description="Unique identifier for the order")]
-    restaurant: Annotated[list[Restaurant], Field(description="Restaurant details")]
-    status: Annotated[
-        Literal["pending", "processing", "shipped", "delivered", "cancelled", "not_delivered"],
-        Field(description="allowed statuses")
-    ]
-    items: Annotated[list[Item], Field(description="List of items in the order")]
-    pricing: Annotated[list[Pricing], Field(description="Pricing details of the order")]
-    payment: Annotated[list[Payment], Field(description="Payment details of the order")]
-    deliveryAddress: Annotated[list[Delivery_Address], Field(description="Delivery address details of the order")]
-    deliveryPartner: Annotated[list[Delivery_Partner], Field(description="Details of the delivery partner")]
-    timeline: Annotated[list[TimeLine], Field(description="Timeline of the order")]
-    ratings: Annotated[list[Ratings], Field(description="Customer ratings and review for the order")]
+    orderId: Annotated[str, Field(description="Order ID")]
+    customerId: Annotated[str, Field(description="Customer ID")]
+    customerName: Annotated[str, Field(description="Customer name")]
+    orderDate: Annotated[str, Field(description="Order timestamp")]
+    status: Annotated[str, Field(description="Order status")]
+    restaurant: Annotated[Restaurant, Field(description="Restaurant details")]
+    items: Annotated[list[OrderItem], Field(description="List of ordered items")]
+    pricing: Annotated[Pricing, Field(description="Pricing details")]
+    payment: Annotated[Payment, Field(description="Payment details")]
+    deliveryAddress: Annotated[DeliveryAddress, Field(description="Delivery address")]
+    deliveryPartner: Annotated[DeliveryPartner, Field(description="Delivery partner details")]
+    timeline: Annotated[Timeline, Field(description="Order timeline")]
+    ratings: Annotated[Ratings, Field(description="Customer ratings and review")]
 
 # customer informations
 # from pydantic import BaseModel, Field

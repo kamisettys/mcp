@@ -3,13 +3,14 @@ from mcp.server.fastmcp import FastMCP
 from customers import CUSTOMERS
 from orders import ORDERS
 from restaurents import RESTAURANTS
+from models import Customer, Order, Restaurant
 
 mcp = FastMCP(name="swiggy_mcp", website_url="https://github.com/kamisettys/Generative-AI-phase1")
 
 
 # tools
 @mcp.tool()
-def get_customer_summary(customer_id: str) -> dict | None:
+def get_customer_summary(customer_id: str) -> Customer | None:
     """
     Retrieve a customer's full information based on their customer ID.
 
@@ -25,12 +26,12 @@ def get_customer_summary(customer_id: str) -> dict | None:
     """
     for customer in CUSTOMERS:
         if customer["customerId"] == customer_id:
-            return customer
+            return Customer(**customer)
     return None
 
 
 @mcp.tool()
-def get_order_information(order_id: str) -> dict | None:
+def get_order_information(order_id: str) -> Order | None:
     """
     Retrieve detailed order information for a given order ID.
 
@@ -46,12 +47,12 @@ def get_order_information(order_id: str) -> dict | None:
     """
     for order in ORDERS:
         if order["orderId"] == order_id:
-            return order
+            return Order(**order)
     return None
 
 
 @mcp.tool()
-def get_restuarent_information(restaurant_id: str) -> dict | None:
+def get_restuarent_information(restaurant_id: str) -> Restaurant | None:
     """
     Retrieve restaurant details based on the restaurant ID.
 
@@ -67,7 +68,7 @@ def get_restuarent_information(restaurant_id: str) -> dict | None:
     """
     for restaurant in RESTAURANTS:
         if restaurant["restaurantId"] == restaurant_id:
-            return restaurant
+            return Restaurant(**restaurant)
     return None
 
 
